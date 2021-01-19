@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <style>
+        .divs {
+            width: 100px;height: 100px;border: 5px solid #eeeeee;background-color: #eeeeee;
+            margin: 10px;
+            float:left;
+        }
+
+        #app {
+            width: 400px;
+            height: 400px;
+            float: left;
+        }
+
+        .border { border: 5px solid yellow;background-color: yellow}
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="divs"></div>
+        <div class="divs"></div>
+        <div class="divs"></div>
+        <div class="divs"></div>
+        <div class="divs"></div>
+        <div class="divs"></div>
+        <div class="divs"></div>
+        <div class="divs"></div>
+        <div class="divs"></div>
+    </div>
+
+    <button id="btn1">开始</button>
+    <button id="btn2">停止</button>
+
+    <script src="/jquery-3.5.1.min.js"></script>
+
+    <script>
+        var timers = []
+        $("#btn1").click(function(){
+            for(var j=0;j<timers.length;j++)
+            {
+                clearInterval(timers[j])
+                timers.splice(j,1)
+            }
+            var divs = $(".divs")
+            divs.empty()
+            var t = setInterval(function(){
+                divs.removeClass('border')
+                var rand_num = Math.random() * 10
+                var num = parseInt(rand_num)
+                var index = num % 9
+                divs.eq(index).addClass('border')
+            },20)
+            timers.push(t)
+            
+            $("#btn2").click(function (){
+                var divs = $(".divs")
+                $.ajax({
+                    url: 'prize.php',
+                    method: 'get',
+                    dataType: 'json'
+                }).done(function(d){
+                    for(var j=0;j<timers.length;j++)
+                    {
+                        console.log(timers[j])
+                        clearInterval(timers[j])
+                        timers.splice(j,1)
+                    }
+
+                    divs.empty()
+                    divs.each(function(index){
+                        if($(this).hasClass('border')){
+                            divs.eq(index).append(d.msg)
+                        }
+                    })
+                    $("#btn2").unbind('click')
+                })
+            })
+        })
+    </script>
+</body>
+</html>
